@@ -15,6 +15,28 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:#fff;color:#1e293b;overflow-x:hidden}
 html{scroll-behavior:smooth}
+.enav-burger{display:none}
+.enav-mobile{display:none;position:fixed;top:64px;left:0;right:0;background:rgba(255,255,255,0.98);backdrop-filter:blur(16px);flex-direction:column;align-items:center;gap:20px;padding:28px 20px;border-bottom:1px solid #e2e8f0;z-index:999;box-shadow:0 8px 32px rgba(0,0,0,0.08)}
+.enav-mobile.open{display:flex}
+@media(max-width:768px){
+  .enav{padding:0 16px !important}
+  .enav-links{display:none !important}
+  .enav-burger{display:flex !important;align-items:center;justify-content:center;cursor:pointer;width:40px;height:40px;border:none;background:transparent}
+  .ehero{padding:100px 20px 60px !important;min-height:auto !important}
+  .egrid3{grid-template-columns:1fr !important}
+  .egrid2{grid-template-columns:1fr !important}
+  .efooter-grid{grid-template-columns:1fr 1fr !important;gap:24px !important}
+  .efooter-bottom{flex-direction:column !important;gap:8px !important;text-align:center}
+  .esection{padding-left:20px !important;padding-right:20px !important}
+  .ehero-stats{gap:16px !important}
+  .earch-layer{padding:14px 14px !important;flex-direction:column !important;align-items:flex-start !important;gap:10px !important}
+  .earch-layer > div:first-child{min-width:auto !important;font-size:0.8rem !important}
+  .earch-tags{justify-content:flex-start !important}
+  .earch-tags span{padding:3px 8px !important;font-size:0.65rem !important}
+  iframe{max-width:100% !important}
+  .econtact-form{padding:24px !important}
+  .econtact-grid{gap:32px !important}
+}
 </style>
 </head>
 <body>
@@ -102,19 +124,32 @@ function Nav({ page, setPage, LOGO }) {
     { id: "platform", label: "Platform" },
     { id: "team", label: "Team" },
   ];
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, padding: "0 40px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", background: navBg ? "rgba(255,255,255,0.97)" : "transparent", backdropFilter: navBg ? "blur(16px)" : "none", borderBottom: navBg ? `1px solid ${C.borderLight}` : "1px solid transparent", transition: "all 0.35s" }}>
+    <>
+    <nav className="enav" style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, padding: "0 40px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", background: navBg ? "rgba(255,255,255,0.97)" : "transparent", backdropFilter: navBg ? "blur(16px)" : "none", borderBottom: navBg ? `1px solid ${C.borderLight}` : "1px solid transparent", transition: "all 0.35s" }}>
       <div style={{ cursor: "pointer", display: "flex", alignItems: "center" }} onClick={() => { setPage("home"); window.scrollTo(0, 0); }}>
         <img src={onDark ? LOGO_WHITE : LOGO} alt="ENVOLV" style={{ height: 36, transition: "opacity 0.3s" }} />
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
+      <div className="enav-links" style={{ display: "flex", alignItems: "center", gap: 26 }}>
         {navLinks.map(n => (
           <span key={n.id} onClick={() => { setPage(n.id); window.scrollTo(0, 0); }}
             style={{ color: page === n.id ? C.teal : onDark ? "rgba(255,255,255,0.7)" : C.text2, textDecoration: "none", fontSize: "0.84rem", fontWeight: page === n.id ? 700 : 500, cursor: "pointer", transition: "color 0.2s", borderBottom: page === n.id ? `2px solid ${C.teal}` : "2px solid transparent", paddingBottom: 2 }}>{n.label}</span>
         ))}
         <span onClick={() => { setPage("contact"); window.scrollTo(0, 0); }} style={{ padding: "8px 20px", background: page === "contact" ? C.tealDark : C.teal, color: C.white, borderRadius: 100, fontSize: "0.84rem", fontWeight: 600, cursor: "pointer", transition: "all 0.25s" }}>Contact</span>
       </div>
+      <div className="enav-burger" onClick={() => setMenuOpen(!menuOpen)}>
+        {menuOpen ? <X size={24} color={onDark ? C.white : C.dark} /> : <Menu size={24} color={onDark ? C.white : C.dark} />}
+      </div>
     </nav>
+    <div className={`enav-mobile ${menuOpen ? "open" : ""}`}>
+      {navLinks.map(n => (
+        <span key={n.id} onClick={() => { setPage(n.id); window.scrollTo(0, 0); setMenuOpen(false); }}
+          style={{ color: page === n.id ? C.teal : C.text, fontSize: "1rem", fontWeight: page === n.id ? 700 : 500, cursor: "pointer" }}>{n.label}</span>
+      ))}
+      <span onClick={() => { setPage("contact"); window.scrollTo(0, 0); setMenuOpen(false); }} style={{ padding: "10px 24px", background: C.teal, color: C.white, borderRadius: 100, fontSize: "0.9rem", fontWeight: 600, cursor: "pointer" }}>Contact</span>
+    </div>
+    </>
   );
 }
 
@@ -124,7 +159,7 @@ function Footer({ LOGO, setPage }) {
   return (
     <footer style={{ background: C.dark, padding: "52px 40px 32px", color: "rgba(255,255,255,0.5)" }}>
       <div style={{ maxWidth: W, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: 36, paddingBottom: 36, borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 24 }}>
+        <div className="efooter-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: 36, paddingBottom: 36, borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 24 }}>
           <div>
             <img src={LOGO_WHITE} alt="ENVOLV" style={{ height: 32, marginBottom: 10 }} />
             <p style={{ fontSize: "0.82rem", lineHeight: 1.6, color: "rgba(255,255,255,0.28)" }}>AI-powered sustainability solutions. From intelligent platforms to environmental intelligence &mdash; helping organizations make smarter, greener decisions.</p>
@@ -154,7 +189,7 @@ function Footer({ LOGO, setPage }) {
             </ul>
           </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.72rem", color: "rgba(255,255,255,0.15)" }}>
+        <div className="efooter-bottom" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.72rem", color: "rgba(255,255,255,0.15)" }}>
           <span>&copy; 2025 ENVOLV-AI. All rights reserved.</span>
           <div style={{ display: "flex", gap: 18 }}>
             <a href="#" style={{ color: "rgba(255,255,255,0.15)", textDecoration: "none" }}>Privacy</a>
@@ -224,7 +259,7 @@ function HomePage({ setPage }) {
   return (
     <>
       {/* HERO */}
-      <section style={{ minHeight: "85vh", display: "flex", alignItems: "center", padding: "120px 40px 80px", position: "relative", overflow: "hidden", background: `linear-gradient(135deg, ${C.dark} 0%, ${C.dark2} 100%)` }}>
+      <section className="ehero" style={{ minHeight: "85vh", display: "flex", alignItems: "center", padding: "120px 40px 80px", position: "relative", overflow: "hidden", background: `linear-gradient(135deg, ${C.dark} 0%, ${C.dark2} 100%)` }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 70% 30%, rgba(13,148,136,0.12), transparent 70%)" }} />
         <div style={{ maxWidth: W, margin: "0 auto", width: "100%", position: "relative" }}>
           <Reveal>
@@ -250,7 +285,7 @@ function HomePage({ setPage }) {
             </div>
           </Reveal>
           <Reveal delay={0.26}>
-            <div style={{ display: "flex", gap: 32, marginTop: 56, flexWrap: "wrap" }}>
+            <div className="ehero-stats" style={{ display: "flex", gap: 32, marginTop: 56, flexWrap: "wrap" }}>
               {[{ icon: BrainCircuit, label: "AI Platforms" }, { icon: Leaf, label: "Sustainability" }, { icon: Recycle, label: "Circular Economy" }, { icon: Globe, label: "EU Research" }, { icon: BarChart3, label: "Data Analytics" }, { icon: Shield, label: "ESG Compliance" }].map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <f.icon size={16} color={C.tealLight} />
@@ -265,12 +300,12 @@ function HomePage({ setPage }) {
 
 
       {/* WHAT WE DO */}
-      <section style={{ padding: "88px 40px", background: C.off }}>
+      <section className="esection" style={{ padding: "88px 40px", background: C.off }}>
         <div style={{ maxWidth: W, margin: "0 auto" }}>
           <Reveal><SectionLabel text="What We Do" /></Reveal>
           <Reveal delay={0.04}><SectionTitle>AI &amp; data intelligence for a sustainable world</SectionTitle></Reveal>
           <Reveal delay={0.08}><SectionDesc>We combine cutting-edge AI research with domain expertise to deliver solutions that drive real environmental and operational impact.</SectionDesc></Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+          <div className="egrid3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
             <FeatureCard icon={BrainCircuit} tag="AI Platform" title="Intelligent Platforms" desc="We design and build AI-powered platforms that transform raw data into actionable sustainability intelligence — from real-time analytics to LLM-powered decision support." bullets={["Custom AI platforms tailored to your domain", "Real-time monitoring & predictive analytics", "LLM-powered insights & automated reporting"]} delay={0.05} />
             <FeatureCard icon={Recycle} tag="Circularity" title="Circular & Sustainable Operations" desc="Our AI tools help organizations track environmental footprints, optimize resource flows, and transition toward circular, low-carbon operations." bullets={["Lifecycle assessment & carbon tracking", "Resource optimization at scale", "EU taxonomy & ESG compliance tools"]} delay={0.1} />
             <FeatureCard icon={Globe} tag="Research" title="EU-Funded Research & Innovation" desc="Deeply embedded in the European research ecosystem, we bring cutting-edge AI research to market through Horizon Europe projects and industry partnerships." bullets={["Active in EU-funded consortia", "From research prototype to production", "Cross-sector technology transfer"]} delay={0.15} />
@@ -279,23 +314,23 @@ function HomePage({ setPage }) {
       </section>
 
       {/* SOLUTIONS */}
-      <section style={{ padding: "88px 40px", background: C.white }}>
+      <section className="esection" style={{ padding: "88px 40px", background: C.white }}>
         <div style={{ maxWidth: W, margin: "0 auto" }}>
           <Reveal><SectionLabel text="Solutions" /></Reveal>
           <Reveal delay={0.04}><SectionTitle>AI-powered solutions across industries</SectionTitle></Reveal>
           <Reveal delay={0.08}><SectionDesc>Tailored AI that optimizes processes, enhances efficiency, and accelerates the transition to sustainability.</SectionDesc></Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+          <div className="egrid3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
             {solutions.map((s, i) => <SolCard key={i} icon={s.icon} title={s.title} desc={s.desc} delay={i * 0.04} />)}
           </div>
         </div>
       </section>
 
       {/* LECOLAZ PROJECT */}
-      <section style={{ padding: "88px 40px", background: C.off }}>
+      <section className="esection" style={{ padding: "88px 40px", background: C.off }}>
         <div style={{ maxWidth: W, margin: "0 auto" }}>
           <Reveal><SectionLabel text="Our First Project" /></Reveal>
           <Reveal delay={0.04}><SectionTitle>Le&apos;Colaz &mdash; where our platform was born</SectionTitle></Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center", marginTop: 32 }}>
+          <div className="egrid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center", marginTop: 32 }}>
             <Reveal delay={0.08}>
               <div>
                 <p style={{ fontSize: "1rem", color: C.text2, lineHeight: 1.75, marginBottom: 20 }}>
@@ -321,7 +356,7 @@ function HomePage({ setPage }) {
             <Reveal delay={0.14}>
               <div style={{ background: C.white, borderRadius: 20, border: `1px solid ${C.borderLight}`, padding: 32, position: "relative" }}>
                 <div style={{ position: "absolute", top: -12, right: 24, padding: "4px 14px", background: C.amberBg, border: `1px solid rgba(245,158,11,0.2)`, borderRadius: 100, fontSize: "0.7rem", fontWeight: 700, color: C.amber }}>HORIZON EUROPE</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+                <div className="egrid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
                   {[{ icon: Boxes, label: "Modular Design", val: "LEGO-like" }, { icon: Leaf, label: "Bio-based Materials", val: "Circular" }, { icon: BrainCircuit, label: "Building Brain", val: "AI Platform" }, { icon: Activity, label: "Smart Monitoring", val: "Real-time" }].map((m, i) => (
                     <div key={i} style={{ textAlign: "center", padding: 16, background: C.off, borderRadius: 12 }}>
                       <m.icon size={22} color={C.teal} style={{ marginBottom: 8 }} />
@@ -338,8 +373,8 @@ function HomePage({ setPage }) {
       </section>
 
       {/* PLATFORM TEASER */}
-      <section style={{ background: `linear-gradient(135deg, ${C.dark} 0%, ${C.dark2} 100%)`, padding: "72px 40px" }}>
-        <div style={{ maxWidth: W, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
+      <section className="esection" style={{ background: `linear-gradient(135deg, ${C.dark} 0%, ${C.dark2} 100%)`, padding: "72px 40px" }}>
+        <div className="egrid2" style={{ maxWidth: W, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
           <div>
             <Reveal><p style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: C.tealLight, marginBottom: 8 }}>Our First Product</p></Reveal>
             <Reveal delay={0.04}><h2 style={{ fontSize: "clamp(1.6rem, 2.5vw, 2.1rem)", fontWeight: 800, color: C.white, letterSpacing: "-0.02em", lineHeight: 1.15, marginBottom: 12 }}>The Building Brain &mdash; our AI sustainability platform</h2></Reveal>
@@ -347,7 +382,7 @@ function HomePage({ setPage }) {
             <Reveal delay={0.12}><span onClick={() => { setPage("platform"); window.scrollTo(0, 0); }} style={{ padding: "12px 24px", background: C.teal, color: C.white, borderRadius: 100, fontSize: "0.88rem", fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer" }}>Explore the platform <ArrowRight size={15} /></span></Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div className="egrid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               {[{ icon: LineChart, label: "Real-time Analytics" }, { icon: MessageSquare, label: "LLM Assistant" }, { icon: Layers, label: "Digital Twins" }, { icon: Gauge, label: "Performance KPIs" }].map((f, i) => (
                 <div key={i} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 14, padding: "22px 18px", textAlign: "center" }}>
                   <f.icon size={24} color={C.tealLight} style={{ marginBottom: 10 }} />
@@ -360,7 +395,7 @@ function HomePage({ setPage }) {
       </section>
 
       {/* CTA */}
-      <section style={{ padding: "88px 40px", background: C.tealBg, textAlign: "center", borderTop: "1px solid rgba(13,148,136,0.1)" }}>
+      <section className="esection" style={{ padding: "88px 40px", background: C.tealBg, textAlign: "center", borderTop: "1px solid rgba(13,148,136,0.1)" }}>
         <Reveal><SectionLabel text="Get Started" /></Reveal>
         <Reveal delay={0.04}><SectionTitle mb={10}>Ready to make sustainability intelligent?</SectionTitle></Reveal>
         <Reveal delay={0.08}><p style={{ color: C.text2, fontSize: "1rem", maxWidth: 460, margin: "0 auto 28px" }}>Let&rsquo;s discuss how AI can turn your sustainability goals into measurable outcomes.</p></Reveal>
@@ -411,7 +446,7 @@ function PlatformPage({ setPage }) {
   return (
     <>
       {/* HERO */}
-      <section style={{ minHeight: "80vh", display: "flex", alignItems: "center", padding: "120px 40px 80px", position: "relative", overflow: "hidden", background: `linear-gradient(135deg, ${C.dark} 0%, ${C.dark2} 100%)` }}>
+      <section className="ehero" style={{ minHeight: "80vh", display: "flex", alignItems: "center", padding: "120px 40px 80px", position: "relative", overflow: "hidden", background: `linear-gradient(135deg, ${C.dark} 0%, ${C.dark2} 100%)` }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 70% 30%, rgba(13,148,136,0.12), transparent 70%)" }} />
         <div style={{ maxWidth: W, margin: "0 auto", width: "100%", position: "relative" }}>
           <Reveal>
@@ -436,7 +471,7 @@ function PlatformPage({ setPage }) {
             </div>
           </Reveal>
           <Reveal delay={0.26}>
-            <div style={{ display: "flex", gap: 32, marginTop: 56 }}>
+            <div className="ehero-stats" style={{ display: "flex", gap: 32, marginTop: 56, flexWrap: "wrap" }}>
               {[{ icon: LineChart, label: "Real-time Analytics" }, { icon: MessageSquare, label: "LLM Assistant" }, { icon: Layers, label: "Digital Twins" }, { icon: Gauge, label: "Performance KPIs" }, { icon: Recycle, label: "Circularity Tracking" }, { icon: Shield, label: "EU Taxonomy Aligned" }].map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <f.icon size={16} color={C.tealLight} />
@@ -449,12 +484,12 @@ function PlatformPage({ setPage }) {
       </section>
 
       {/* CORE MODULES */}
-      <section style={{ padding: "88px 40px", background: C.off }}>
+      <section className="esection" style={{ padding: "88px 40px", background: C.off }}>
         <div style={{ maxWidth: W, margin: "0 auto" }}>
           <Reveal><SectionLabel text="Core Modules" /></Reveal>
           <Reveal delay={0.04}><SectionTitle>Six integrated modules, one intelligent platform</SectionTitle></Reveal>
           <Reveal delay={0.08}><SectionDesc>Each module works independently or together as a unified building intelligence system.</SectionDesc></Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+          <div className="egrid3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
             <ModuleCard icon={LineChart} title="Real-time Analytics Engine" desc="Continuous monitoring of energy consumption, indoor air quality, thermal performance, and occupancy patterns with anomaly detection." tags={["Time-Series", "IoT", "Anomaly Detection"]} delay={0.05} />
             <ModuleCard icon={MessageSquare} title="LLM Building Assistant" desc="A natural language interface to query building performance, get optimization recommendations, and generate sustainability reports automatically." tags={["GPT-4", "RAG", "Natural Language"]} delay={0.08} />
             <ModuleCard icon={Layers} title="Digital Twin Engine" desc="Live 3D digital replicas of buildings that simulate energy flows, material degradation, and renovation scenarios before implementation." tags={["BIM/IFC", "Simulation", "3D Viewer"]} delay={0.11} />
@@ -466,7 +501,7 @@ function PlatformPage({ setPage }) {
       </section>
 
       {/* ARCHITECTURE */}
-      <section style={{ padding: "88px 40px", background: C.white }}>
+      <section className="esection" style={{ padding: "88px 40px", background: C.white }}>
         <div style={{ maxWidth: W, margin: "0 auto" }}>
           <Reveal><SectionLabel text="Architecture" /></Reveal>
           <Reveal delay={0.04}><SectionTitle>Built for scale, designed for intelligence</SectionTitle></Reveal>
@@ -474,9 +509,9 @@ function PlatformPage({ setPage }) {
           <Reveal delay={0.12}>
             <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 8 }}>
               {archLayers.map((layer, i) => (
-                <div key={i} style={{ background: layer.color, borderRadius: i === 0 ? "16px 16px 4px 4px" : i === archLayers.length - 1 ? "4px 4px 16px 16px" : 4, padding: "22px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div key={i} className="earch-layer" style={{ background: layer.color, borderRadius: i === 0 ? "16px 16px 4px 4px" : i === archLayers.length - 1 ? "4px 4px 16px 16px" : 4, padding: "22px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ fontSize: "0.88rem", fontWeight: 700, color: C.white, minWidth: 180 }}>{layer.label}</div>
-                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                  <div className="earch-tags" style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
                     {layer.items.map((item, j) => (
                       <span key={j} style={{ padding: "5px 14px", background: "rgba(255,255,255,0.1)", borderRadius: 100, fontSize: "0.76rem", fontWeight: 500, color: "rgba(255,255,255,0.75)" }}>{item}</span>
                     ))}
@@ -489,11 +524,11 @@ function PlatformPage({ setPage }) {
       </section>
 
       {/* USE CASES */}
-      <section style={{ padding: "88px 40px", background: C.off }}>
+      <section className="esection" style={{ padding: "88px 40px", background: C.off }}>
         <div style={{ maxWidth: W, margin: "0 auto" }}>
           <Reveal><SectionLabel text="Use Cases" /></Reveal>
           <Reveal delay={0.04}><SectionTitle>How Building Brain transforms operations</SectionTitle></Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 32 }}>
+          <div className="egrid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 32 }}>
             {[
               { title: "Energy Optimization", desc: "Reduce energy consumption by up to 30% through ML-driven HVAC scheduling, lighting control, and demand prediction.", icon: Zap },
               { title: "Predictive Maintenance", desc: "Detect equipment degradation early through sensor fusion and anomaly detection, reducing downtime and repair costs.", icon: Settings },
@@ -517,7 +552,7 @@ function PlatformPage({ setPage }) {
       </section>
 
       {/* CTA */}
-      <section style={{ padding: "72px 40px", background: `linear-gradient(135deg, ${C.dark} 0%, ${C.dark2} 100%)`, textAlign: "center" }}>
+      <section className="esection" style={{ padding: "72px 40px", background: `linear-gradient(135deg, ${C.dark} 0%, ${C.dark2} 100%)`, textAlign: "center" }}>
         <Reveal><h2 style={{ fontSize: "clamp(1.6rem, 2.5vw, 2.1rem)", fontWeight: 800, color: C.white, marginBottom: 10 }}>Ready to give your buildings a brain?</h2></Reveal>
         <Reveal delay={0.04}><p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.95rem", maxWidth: 440, margin: "0 auto 24px" }}>Get early access to the Building Brain platform and join us in shaping the future of intelligent construction.</p></Reveal>
         <Reveal delay={0.08}><span onClick={() => { setPage("contact"); window.scrollTo(0, 0); }}><Btn href="#">Request early access <ArrowRight size={16} /></Btn></span></Reveal>
@@ -555,20 +590,20 @@ function TeamPage({ setPage }) {
   return (
     <>
       {/* HERO */}
-      <section style={{ padding: "140px 40px 60px", background: C.off, textAlign: "center" }}>
+      <section className="esection" style={{ padding: "140px 40px 60px", background: C.off, textAlign: "center" }}>
         <Reveal><SectionLabel text="Our Team" /></Reveal>
         <Reveal delay={0.04}><h1 style={{ fontSize: "clamp(2.4rem, 4vw, 3.2rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", color: C.dark, marginBottom: 14, maxWidth: 600, margin: "0 auto 14px" }}>Expertise that drives <span style={{ color: C.teal }}>impact</span></h1></Reveal>
         <Reveal delay={0.08}><p style={{ fontSize: "1.05rem", color: C.text2, maxWidth: 540, margin: "0 auto", lineHeight: 1.7 }}>A multidisciplinary team combining deep AI research, software engineering, and sustainability science to build technology that makes a difference.</p></Reveal>
       </section>
 
       {/* TEAM GRID */}
-      <section style={{ padding: "48px 40px 88px", background: C.off }}>
+      <section className="esection" style={{ padding: "48px 40px 88px", background: C.off }}>
         <div style={{ maxWidth: W, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 36 }}>
             <Reveal><SectionLabel text="Core Expertise" /></Reveal>
             <Reveal delay={0.04}><SectionTitle>Where AI meets sustainability</SectionTitle></Reveal>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
+          <div className="egrid2" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
             <RoleCard icon={Brain} role="AI Strategy & Research" focus="Driving the company vision at the intersection of artificial intelligence and sustainability. Leading EU-funded research initiatives and forging strategic partnerships across Europe." tags={["Strategy", "EU Research", "Partnerships"]} delay={0.02} />
             <RoleCard icon={Cpu} role="Platform Architecture" focus="Designing and building the Building Brain platform from the ground up — scalable cloud infrastructure, real-time data pipelines, and digital twin integration." tags={["Full-Stack", "Cloud", "Digital Twins"]} delay={0.06} />
             <RoleCard icon={BrainCircuit} role="Machine Learning" focus="Developing the AI core — from LLM-powered building assistants to predictive energy models and anomaly detection systems." tags={["LLMs", "Forecasting", "MLOps"]} delay={0.1} />
@@ -578,11 +613,11 @@ function TeamPage({ setPage }) {
       </section>
 
       {/* VALUES */}
-      <section style={{ padding: "88px 40px", background: C.white }}>
+      <section className="esection" style={{ padding: "88px 40px", background: C.white }}>
         <div style={{ maxWidth: W, margin: "0 auto" }}>
           <Reveal><SectionLabel text="Our Values" /></Reveal>
           <Reveal delay={0.04}><SectionTitle>What drives us</SectionTitle></Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginTop: 32 }}>
+          <div className="egrid3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginTop: 32 }}>
             {[
               { icon: Eye, title: "Research-First", desc: "Every product decision is grounded in rigorous research. We publish, peer-review, and validate before we deploy." },
               { icon: Shield, title: "Responsible AI", desc: "We build transparent, explainable systems. Our AI augments human decision-making, never replaces it." },
@@ -603,8 +638,8 @@ function TeamPage({ setPage }) {
       </section>
 
       {/* TEAM PHOTO + JOIN */}
-      <section style={{ padding: "88px 40px", background: C.off }}>
-        <div style={{ maxWidth: W, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
+      <section className="esection" style={{ padding: "88px 40px", background: C.off }}>
+        <div className="egrid2" style={{ maxWidth: W, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
           <Reveal><ImageSlot src={TEAM_IMG} alt="ENVOLV team" height="380px" rounded={20} /></Reveal>
           <div>
             <Reveal><SectionLabel text="Join Us" /></Reveal>
@@ -650,7 +685,7 @@ function ContactPage() {
   return (
     <>
       {/* HERO */}
-      <section style={{ padding: "140px 40px 0", background: C.off }}>
+      <section className="esection" style={{ padding: "140px 40px 0", background: C.off }}>
         <div style={{ maxWidth: W, margin: "0 auto", textAlign: "center" }}>
           <Reveal><SectionLabel text="Contact" /></Reveal>
           <Reveal delay={0.04}><h1 style={{ fontSize: "clamp(2.4rem, 4vw, 3.2rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", color: C.dark, marginBottom: 14 }}>Say <span style={{ color: C.teal }}>Hello</span></h1></Reveal>
@@ -659,12 +694,12 @@ function ContactPage() {
       </section>
 
       {/* FORM + INFO */}
-      <section style={{ padding: "56px 40px 88px", background: C.off }}>
-        <div style={{ maxWidth: W, margin: "0 auto", display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 56, alignItems: "start" }}>
+      <section className="esection" style={{ padding: "56px 40px 88px", background: C.off }}>
+        <div className="egrid2 econtact-grid" style={{ maxWidth: W, margin: "0 auto", display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 56, alignItems: "start" }}>
 
           {/* FORM */}
           <Reveal delay={0.1}>
-            <div style={{ background: C.white, borderRadius: 20, border: `1px solid ${C.borderLight}`, padding: 36, boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
+            <div className="econtact-form" style={{ background: C.white, borderRadius: 20, border: `1px solid ${C.borderLight}`, padding: 36, boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
               {submitted ? (
                 <div style={{ textAlign: "center", padding: "48px 20px" }}>
                   <div style={{ width: 64, height: 64, borderRadius: "50%", background: C.tealBg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
@@ -676,7 +711,7 @@ function ContactPage() {
               ) : (
                 <form onSubmit={handleSubmit}>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700, color: C.dark, marginBottom: 24 }}>Send us a message</h3>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+                  <div className="egrid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
                     <div>
                       <label style={{ fontSize: "0.78rem", fontWeight: 600, color: C.text2, marginBottom: 5, display: "block" }}>First Name</label>
                       <input type="text" style={inputStyle} value={form.first} onChange={e => setForm({ ...form, first: e.target.value })} onFocus={e => e.target.style.borderColor = C.teal} onBlur={e => e.target.style.borderColor = C.border} required />
@@ -762,7 +797,7 @@ function ContactPage() {
             <Reveal delay={0.3}>
               <div style={{ background: C.white, borderRadius: 16, border: `1px solid ${C.borderLight}`, overflow: "hidden" }}>
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3067.5!2d22.4191!3d39.6372!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x13590fba40ec7e33%3A0x400bd2ce2b980e0!2sLarissa%2C%20Greece!5e0!3m2!1sen!2s!4v1700000000000"
+                  src="https://maps.google.com/maps?q=Valtetsiou+%26+Tripoleos,+41336+Larissa,+Greece&t=&z=17&ie=UTF8&iwloc=&output=embed"
                   width="100%" height="220" style={{ border: 0, display: "block", borderRadius: 16 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
