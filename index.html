@@ -670,10 +670,22 @@ function ContactPage() {
   const W = 1120;
   const [form, setForm] = useState({ first: "", last: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSending(true);
+    setError(false);
+    try {
+      const res = await fetch("https://formspree.io/f/xykdbewg", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: form.first + " " + form.last, email: form.email, message: form.message }),
+      });
+      if (res.ok) { setSubmitted(true); } else { setError(true); }
+    } catch { setError(true); }
+    setSending(false);
   };
 
   const inputStyle = {
@@ -729,8 +741,9 @@ function ContactPage() {
                     <label style={{ fontSize: "0.78rem", fontWeight: 600, color: C.text2, marginBottom: 5, display: "block" }}>Message</label>
                     <textarea style={{ ...inputStyle, minHeight: 130, resize: "vertical" }} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} onFocus={e => e.target.style.borderColor = C.teal} onBlur={e => e.target.style.borderColor = C.border} required />
                   </div>
-                  <button type="submit" style={{ width: "100%", padding: "14px 24px", background: C.teal, color: C.white, border: "none", borderRadius: 100, fontSize: "0.95rem", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "background 0.2s", fontFamily: "inherit" }} onMouseEnter={e => e.target.style.background = C.tealDark} onMouseLeave={e => e.target.style.background = C.teal}>
-                    Send Message <ArrowRight size={16} />
+                  {error && <p style={{ color: "#dc2626", fontSize: "0.85rem", marginBottom: 12 }}>Something went wrong. Please try again or email us directly.</p>}
+                  <button type="submit" disabled={sending} style={{ width: "100%", padding: "14px 24px", background: sending ? C.text3 : C.teal, color: C.white, border: "none", borderRadius: 100, fontSize: "0.95rem", fontWeight: 600, cursor: sending ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "background 0.2s", fontFamily: "inherit", opacity: sending ? 0.7 : 1 }} onMouseEnter={e => { if (!sending) e.target.style.background = C.tealDark; }} onMouseLeave={e => { if (!sending) e.target.style.background = C.teal; }}>
+                    {sending ? "Sending..." : "Send Message"} {!sending && <ArrowRight size={16} />}
                   </button>
                 </form>
               )}
