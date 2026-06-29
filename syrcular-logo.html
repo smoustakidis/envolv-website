@@ -78,7 +78,10 @@
   }
   function fit() {
     var stage = document.getElementById("stage");
-    var s = (stage.clientHeight * 0.86) / LINE_H;
+    var byH = (stage.clientHeight * 0.86) / LINE_H;
+    var nw = lockup.offsetWidth || 1;
+    var byW = (stage.clientWidth * 0.98) / nw;
+    var s = Math.min(byH, byW);
     if (!isFinite(s) || s <= 0) s = 1;
     lockup.style.transform = "scale(" + s + ")";
   }

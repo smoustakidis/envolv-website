@@ -188,7 +188,7 @@ function Footer({ setPage }) {
         <div className="efooter-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: 36, paddingBottom: 36, borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 24 }}>
           <div>
             <div onMouseEnter={(e) => { const f = e.currentTarget.querySelector("iframe"); if (f && f.contentWindow) f.contentWindow.postMessage("syrcular:play", "*"); }} style={{ marginBottom: 12 }}>
-              <iframe src="syrcular-logo.html?dark=1" title="Syrcular" scrolling="no" style={{ width: 184, height: 34, border: "none", display: "block", pointerEvents: "none" }} />
+              <iframe src="syrcular-logo.html?dark=1" title="Syrcular" scrolling="no" style={{ width: "100%", maxWidth: 184, height: 34, border: "none", display: "block", pointerEvents: "none" }} />
             </div>
             <p style={{ fontSize: "0.82rem", lineHeight: 1.6, color: "rgba(255,255,255,0.28)" }}>AI-powered sustainability solutions. From intelligent platforms to environmental intelligence &mdash; helping organizations make smarter, greener decisions.</p>
           </div>
