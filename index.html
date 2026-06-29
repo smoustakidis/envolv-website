@@ -138,7 +138,18 @@ function SectionDesc({ children, mb = 40 }) {
 }
 
 /* === NAV === */
-function Nav({ page, setPage }) {
+/* === REBRAND TRANSITION BANNER === */
+function RebrandBanner({ onClose }) {
+  return (
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 40, zIndex: 1100, background: C.teal, color: C.white, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 44px", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.01em" }}>
+      <Sparkles size={15} style={{ flexShrink: 0, opacity: 0.9, marginRight: 8 }} />
+      <span style={{ textAlign: "center" }}><strong style={{ fontWeight: 700 }}>ENVOLV-AI is now Syrcular</strong> &middot; same team, same mission, new name.</span>
+      <button onClick={onClose} aria-label="Dismiss" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", color: C.white, cursor: "pointer", display: "flex", padding: 4, opacity: 0.85 }}><X size={16} /></button>
+    </div>
+  );
+}
+
+function Nav({ page, setPage, bannerOffset = 0 }) {
   const scrollY = useScrollY();
   const navBg = scrollY > 20;
   const darkHero = page === "platform";
@@ -151,7 +162,7 @@ function Nav({ page, setPage }) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <>
-    <nav className="enav" style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, padding: "0 40px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", background: navBg ? "rgba(255,255,255,0.97)" : "transparent", backdropFilter: navBg ? "blur(16px)" : "none", borderBottom: navBg ? `1px solid ${C.borderLight}` : "1px solid transparent", transition: "all 0.35s" }}>
+    <nav className="enav" style={{ position: "fixed", top: bannerOffset, left: 0, right: 0, zIndex: 1000, padding: "0 40px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", background: navBg ? "rgba(255,255,255,0.97)" : "transparent", backdropFilter: navBg ? "blur(16px)" : "none", borderBottom: navBg ? `1px solid ${C.borderLight}` : "1px solid transparent", transition: "all 0.35s" }}>
       <div style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
         onClick={() => { setPage("home"); window.scrollTo(0, 0); }}
         onMouseEnter={(e) => { const f = e.currentTarget.querySelector("iframe"); if (f && f.contentWindow) f.contentWindow.postMessage("syrcular:play", "*"); }}>
@@ -168,7 +179,7 @@ function Nav({ page, setPage }) {
         {menuOpen ? <X size={24} color={onDark ? C.white : C.dark} /> : <Menu size={24} color={onDark ? C.white : C.dark} />}
       </div>
     </nav>
-    <div className={`enav-mobile ${menuOpen ? "open" : ""}`}>
+    <div className={`enav-mobile ${menuOpen ? "open" : ""}`} style={{ top: bannerOffset + 64 }}>
       {navLinks.map(n => (
         <span key={n.id} onClick={() => { setPage(n.id); window.scrollTo(0, 0); setMenuOpen(false); }}
           style={{ color: page === n.id ? C.teal : C.text, fontSize: "1rem", fontWeight: page === n.id ? 700 : 500, cursor: "pointer" }}>{n.label}</span>
@@ -855,11 +866,15 @@ function ContactPage() {
    ============================================================ */
 function SyrcularApp() {
   const [page, setPage] = useState("home");
+  const [banner, setBanner] = useState(() => { try { return localStorage.getItem("syrcular:banner") !== "off"; } catch (e) { return true; } });
+  const dismissBanner = () => { setBanner(false); try { localStorage.setItem("syrcular:banner", "off"); } catch (e) {} };
+  const bannerOffset = banner ? 40 : 0;
 
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, system-ui, sans-serif", color: C.text, background: C.white, overflowX: "hidden", WebkitFontSmoothing: "antialiased" }}>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, system-ui, sans-serif", color: C.text, background: C.white, overflowX: "hidden", WebkitFontSmoothing: "antialiased", paddingTop: bannerOffset, transition: "padding-top 0.3s" }}>
       <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-      <Nav page={page} setPage={setPage} />
+      {banner && <RebrandBanner onClose={dismissBanner} />}
+      <Nav page={page} setPage={setPage} bannerOffset={bannerOffset} />
       {page === "home" && <HomePage setPage={setPage} />}
       {page === "platform" && <PlatformPage setPage={setPage} />}
       {page === "team" && <TeamPage setPage={setPage} />}
