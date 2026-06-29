@@ -152,7 +152,7 @@ function RebrandBanner({ onClose }) {
 function Nav({ page, setPage, bannerOffset = 0 }) {
   const scrollY = useScrollY();
   const navBg = scrollY > 20;
-  const darkHero = page === "platform";
+  const darkHero = page === "platform" || page === "home";
   const onDark = darkHero && !navBg;
   const navLinks = [
     { id: "home", label: "Home" },
@@ -298,37 +298,37 @@ function HomePage({ setPage }) {
   return (
     <>
       {/* HERO */}
-      <section className="ehero" style={{ minHeight: "85vh", display: "flex", alignItems: "center", padding: "110px 40px 80px", position: "relative", overflow: "hidden", background: "#faf9f5" }}>
+      <section className="ehero" style={{ minHeight: "85vh", display: "flex", alignItems: "center", padding: "110px 40px 80px", position: "relative", overflow: "hidden", background: `linear-gradient(135deg, ${C.dark} 0%, ${C.dark2} 100%)` }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 70% 30%, rgba(13,148,136,0.12), transparent 70%)" }} />
         <div style={{ maxWidth: W, margin: "0 auto", width: "100%", position: "relative" }}>
           <Reveal>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", background: "rgba(13,148,136,0.12)", border: "1px solid rgba(13,148,136,0.22)", borderRadius: 100, fontSize: "0.78rem", fontWeight: 600, color: C.teal, marginBottom: 28 }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.teal, animation: "pulse 2s ease-in-out infinite" }} />
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", background: "rgba(13,148,136,0.15)", border: "1px solid rgba(13,148,136,0.2)", borderRadius: 100, fontSize: "0.78rem", fontWeight: 600, color: C.tealLight, marginBottom: 28 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.tealLight, animation: "pulse 2s ease-in-out infinite" }} />
               AI-driven sustainability solutions
             </div>
           </Reveal>
           <Reveal delay={0.06}>
-            <h1 style={{ fontSize: "clamp(2.8rem, 5vw, 4rem)", fontWeight: 800, lineHeight: 1.08, letterSpacing: "-0.035em", color: C.dark, marginBottom: 22, maxWidth: 720 }}>
+            <h1 style={{ fontSize: "clamp(2.8rem, 5vw, 4rem)", fontWeight: 800, lineHeight: 1.08, letterSpacing: "-0.035em", color: C.white, marginBottom: 22, maxWidth: 720 }}>
               AI systems that power a <span style={{ color: C.tealLight }}>circular future</span>
             </h1>
           </Reveal>
           <Reveal delay={0.12}>
-            <p style={{ fontSize: "1.15rem", color: C.text2, lineHeight: 1.7, marginBottom: 36, maxWidth: 560 }}>
+            <p style={{ fontSize: "1.15rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.7, marginBottom: 36, maxWidth: 560 }}>
               Syrcular builds AI systems that turn sustainability ambitions into measurable outcomes, helping organizations optimize resources, reduce environmental impact, and make smarter decisions.
             </p>
           </Reveal>
           <Reveal delay={0.18}>
             <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
               <span onClick={() => { setPage("platform"); window.scrollTo(0, 0); }}><Btn>Explore our platform <ArrowRight size={16} /></Btn></span>
-              <span onClick={() => { setPage("contact"); window.scrollTo(0, 0); }}><Btn href="#" primary={false} style={{ background: C.white, color: C.dark, borderColor: C.border }}>Talk to an expert</Btn></span>
+              <span onClick={() => { setPage("contact"); window.scrollTo(0, 0); }}><Btn href="#" primary={false} style={{ background: "transparent", color: "rgba(255,255,255,0.7)", borderColor: "rgba(255,255,255,0.15)" }}>Talk to an expert</Btn></span>
             </div>
           </Reveal>
           <Reveal delay={0.26}>
             <div className="ehero-stats" style={{ display: "flex", gap: 32, marginTop: 56, flexWrap: "wrap" }}>
               {[{ icon: BrainCircuit, label: "AI Platforms" }, { icon: Leaf, label: "Sustainability" }, { icon: Recycle, label: "Circular Economy" }, { icon: Globe, label: "EU Research" }, { icon: BarChart3, label: "Data Analytics" }, { icon: Shield, label: "ESG Compliance" }].map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <f.icon size={16} color={C.teal} />
-                  <span style={{ fontSize: "0.82rem", color: C.text2, fontWeight: 500 }}>{f.label}</span>
+                  <f.icon size={16} color={C.tealLight} />
+                  <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>{f.label}</span>
                 </div>
               ))}
             </div>
