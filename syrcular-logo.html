@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Syrcular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+  #stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-start;}
+  #lockup{display:inline-flex;align-items:flex-end;transform-origin:left center;font-family:'Jost',sans-serif;white-space:nowrap;will-change:transform}
+  .glyph{overflow:hidden;display:flex;align-items:flex-end}
+  .glyph > span{display:inline-block;will-change:transform}
+</style>
+</head>
+<body>
+<div id="stage"><div id="lockup"></div></div>
+<script>
+// Faithful Syrcular kinetic wordmark — left-aligned. Rests on the settled frame;
+// plays the reveal once (then freezes) on a "syrcular:play" message or pointer enter.
+(function () {
+  var FS = 150;
+  var CAP = FS * 0.71, GAP = FS * 0.17857, SLASH_W = FS * 0.44, LINE_H = FS * 1.04;
+  var _qp = new URLSearchParams(location.search);
+  var _b = parseFloat(_qp.get('b')); var BARBOT = FS * (isFinite(_b) ? _b : 0.13);
+  var _dark = _qp.get('dark') === '1';
+  var INK = _dark ? "#FFFFFF" : "#1B2025", MARK = _dark ? "#5EBC7B" : "#2A8D4F";
+  var RIGHT = ["R", "C", "U", "L", "A", "R"];
+  var DUR = 3.0;
+
+  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  var lerp = function (a, b, t) { return a + (b - a) * t; };
+  var E = {
+    outQuad: function (t) { return t * (2 - t); },
+    outExpo: function (t) { return t >= 1 ? 1 : 1 - Math.pow(2, -10 * t); },
+    outBack: function (t) { var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); }
+  };
+  var seg = function (t, s, e, ease) { ease = ease || function (x) { return x; }; if (e <= s) return t >= e ? 1 : 0; return ease(clamp((t - s) / (e - s), 0, 1)); };
+
+  var lockup = document.getElementById("lockup");
+  lockup.style.gap = GAP + "px";
+  var letterCss = "font-size:" + FS + "px;font-weight:400;line-height:1;letter-spacing:0.01em;";
+  function glyph(ch) {
+    var wrap = document.createElement("div");
+    wrap.className = "glyph"; wrap.style.height = LINE_H + "px";
+    var sp = document.createElement("span");
+    sp.textContent = ch; sp.style.cssText = letterCss + "color:" + INK + ";";
+    wrap.appendChild(sp); wrap._span = sp; return wrap;
+  }
+  var gS = glyph("S"); gS._delay = 0.78; lockup.appendChild(gS);
+  var slot = document.createElement("div");
+  slot.style.cssText = "position:relative;width:" + SLASH_W + "px;height:" + LINE_H + "px;";
+  var bar = document.createElement("div");
+  var barH = CAP * 1.12;
+  bar.style.cssText = "position:absolute;left:50%;bottom:" + BARBOT + "px;margin-left:-7px;width:14px;height:" + barH + "px;background:" + MARK + ";border-radius:7px;transform-origin:50% 100%;will-change:transform;";
+  var dot = document.createElement("div");
+  dot.style.cssText = "position:absolute;left:50%;top:" + (LINE_H * 0.19) + "px;margin-left:-27px;width:20px;height:20px;border-radius:10px;background:" + MARK + ";will-change:transform;";
+  slot.appendChild(bar); slot.appendChild(dot); lockup.appendChild(slot);
+  var rights = RIGHT.map(function (ch, i) { var g = glyph(ch); g._delay = 0.84 + i * 0.062; lockup.appendChild(g); return g; });
+  var glyphs = [gS].concat(rights);
+
+  function frame(t) {
+    glyphs.forEach(function (g) {
+      var p = seg(t, g._delay, g._delay + 0.5, E.outExpo);
+      g._span.style.transform = "translateY(" + ((1 - p) * 104) + "%)";
+      g._span.style.opacity = clamp(p * 1.6, 0, 1);
+    });
+    var grow = seg(t, 0.06, 0.86, E.outExpo);
+    var rot = lerp(-7, 18, seg(t, 0.06, 0.92, E.outBack));
+    bar.style.transform = "rotate(" + rot + "deg) scaleY(" + grow + ")";
+    var dotP = seg(t, 0.46, 1.06, E.outBack);
+    var dotY = lerp(-260, 0, dotP) * (FS / 168);
+    var dotFloat = Math.sin((t - 1.1) * 1.4) * 4 * seg(t, 1.1, 1.4, E.outQuad) * (FS / 168);
+    dot.style.transform = "translateY(" + (dotY + dotFloat) + "px)";
+    dot.style.opacity = clamp(seg(t, 0.46, 0.62, E.outQuad), 0, 1);
+  }
+  function fit() {
+    var stage = document.getElementById("stage");
+    var s = (stage.clientHeight * 0.86) / LINE_H;
+    if (!isFinite(s) || s <= 0) s = 1;
+    lockup.style.transform = "scale(" + s + ")";
+  }
+  window.addEventListener("resize", fit);
+
+  var animating = false, start = null;
+  function step(ts) {
+    if (start == null) start = ts;
+    var t = (ts - start) / 1000;
+    if (t >= DUR) { frame(DUR); animating = false; start = null; return; }
+    frame(t);
+    requestAnimationFrame(step);
+  }
+  function playOnce() { if (animating) return; animating = true; start = null; requestAnimationFrame(step); }
+
+  frame(DUR); fit();
+  requestAnimationFrame(fit);
+
+  window.addEventListener("message", function (e) { if (e && e.data === "syrcular:play") playOnce(); });
+  document.addEventListener("mouseenter", playOnce);
+  document.addEventListener("pointerenter", playOnce);
+})();
+</script>
+</body>
+</html>
