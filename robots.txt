@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://smoustakidis.github.io/envolv-website/sitemap.xml
